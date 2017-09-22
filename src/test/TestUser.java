@@ -14,6 +14,18 @@ public class TestUser {
 	}
 	
 	@Test
+	public void testLogin() {
+		User testuser = new User("Asad");
+		testuser.setPassword("password123");
+		boolean actual;
+		actual = testuser.login("Asad", "password123");
+		assertTrue(actual);
+		
+		actual = testuser.login("Asad", "password");
+		assertFalse(actual);	
+	}
+	
+	@Test
 	public void testGetName() {
 		User testuser = new User("Asad","1234","Student");
 		String expected = "Asad";
@@ -36,17 +48,5 @@ public class TestUser {
 		testuser.setScore(expected);
 		int actual = testuser.getScore();
 		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void testLogin() {
-		User testuser = new User("Asad");
-		testuser.setPassword("password123");
-		boolean actual;
-		actual = testuser.login("Asad", "password123");
-		assertTrue(actual);
-		
-		actual = testuser.login("Asad", "password");
-		assertFalse(actual);	
 	}
 }

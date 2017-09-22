@@ -4,6 +4,8 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.SoftBevelBorder;
+
 import java.lang.*;
 import java.util.*;
 
@@ -479,7 +481,7 @@ public class Quizer{
 	   model.quizerPanel.repaint();
 	   //Attempt Quiz Label
 	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
-	   attemptLabel.setFont(new Font("Franklin Gothic Medium Cond", Font.PLAIN, 35));
+	   attemptLabel.setFont(new Font("Franklin Gothic Medium Cond", Font.PLAIN, 40));
 	   attemptLabel.setBounds(450, 50, 500, 50);
 	   
 	   collectQuizFiles();
