@@ -11,6 +11,7 @@ import org.junit.rules.ExpectedException;
 
 import assign.Quiz;
 import assign.Quizer;
+import assign.QuizerModel;
 import assign.User;
 
 public class TestQuizer {
@@ -29,18 +30,21 @@ public class TestQuizer {
 	
 	@Test
 	public void testDeserializeUser() {
-		Quiz quiz = new Quiz();
-		quiz = test.deserializeQuiz("random");	//no such file so it returns null object
-		assertNull(quiz);
-	}
-
-	@Test
-	public void testDeserializeQuiz() {
 		User user = new User("new");
 		user = test.deserializeUser("student.ser");	//file exists
 		assertNotNull(user);
 		
 		user = test.deserializeUser("randomfile");	//file doesn't exists
-		assertNull(user);	
+		assertNull(user);
+	}
+
+	@Test
+	public void testDeserializeQuiz() {
+		Quiz quiz = new Quiz();
+		quiz = test.deserializeQuiz("Quiz1.ser");	//file exists
+		assertNotNull(quiz);
+		
+		quiz = test.deserializeQuiz("Quiz1");	//file doesn't exists
+		assertNull(quiz);
 	}
 }

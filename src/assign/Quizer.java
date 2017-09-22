@@ -344,6 +344,7 @@ public class Quizer{
 						   quiz1.questions[i].setQuestion(model.questText[i].getText());
 						   //storing question types in quiz1 object
 						   quiz1.questions[i].setQuestType(model.comboBox[i].getSelectedIndex());
+						   quiz1.questions[i].setQuestionNo(i++);
 						   
 						   //storing options in quiz1 object
 						   quiz1.questions[i].option1 = model.questOptions[i][0].getText();
@@ -535,6 +536,9 @@ public class Quizer{
 	   //printing all questions and options
 	   int x=10, y=120, w=90,h=20, xo;
 	   for (i=0; i<10; i++) {
+		   if (recQuiz.questions[i].question.equals("")) {
+			   break;
+		   }
 		   xo = x;
 		   model.optionRadioButtons[i][0].setText(recQuiz.questions[i].option1);
 		   model.optionRadioButtons[i][1].setText(recQuiz.questions[i].option2);
@@ -639,13 +643,7 @@ public class Quizer{
                }
                
                else if(options[n].contains("Log Out")) {
-            	   for (i=0;i<10;i++) {
-            		   model.optionRadioGroups[i].clearSelection();
-            		   model.answerText[i].setText("");
-            	   }
-            	   model.quizerPanel.removeAll();
-            	   model.quizerFrame.dispose();
-            	   model.mainFrame.setVisible(true);
+            	   logout();
                }
                
                else if(options[n].contains("Exit Program")){
@@ -661,5 +659,15 @@ public class Quizer{
 	   model.quizerPanel.add(attQuizDesc);
 	   model.quizerPanel.add(attQuizTitle);
 	   model.quizerPanel.repaint();
+   }
+   
+   public void logout() {
+	   for (i=0;i<10;i++) {
+		   model.optionRadioGroups[i].clearSelection();
+		   model.answerText[i].setText("");
+	   }
+	   model.quizerPanel.removeAll();
+	   model.quizerFrame.dispose();
+	   model.mainFrame.setVisible(true);
    }
 }
