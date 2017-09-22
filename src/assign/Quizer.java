@@ -503,9 +503,6 @@ public class Quizer{
 		   quizButtons[i].setBounds(x,y,w,h);
 		   model.quizerPanel.add(quizButtons[i]);
 		   model.tempQuiz = deserializeQuiz(model.quizFiles.get(i));
-		   model.tempQuiz.title = "Test Quiz";
-		   model.tempQuiz.description = "This is just test quiz";
-		   serializeQuiz(model.tempQuiz, model.tempQuiz.title);
 		   quizButtonEventListener(quizButtons[i], model.tempQuiz);
 		   x+=200;
 		   if (i%4 == 3) {
