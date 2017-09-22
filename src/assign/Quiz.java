@@ -11,4 +11,12 @@ public class Quiz implements java.io.Serializable {
 		}
 	}
 	
+	public boolean hasTitle() {
+		if (title.equals("")) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 }

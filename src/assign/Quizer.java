@@ -261,9 +261,16 @@ public class Quizer{
 	   model.mainFrame.setVisible(true);
    }
    
+   public boolean checkQuizTitle(Quiz quiz) {
+	   if (quiz.hasTitle())
+		   return true;
+	   else
+		   return false;
+   }
+   
    public void createQuiz() {
 	   Quiz quiz1 = new Quiz();
-	   //show all questions
+	   //show all questions labels
 	   for (i=0;i<10;i++) {
 		   for (j=0;j<4;j++) {
 			   model.optionLabel[i][j].show();
@@ -300,7 +307,11 @@ public class Quizer{
 		   public void actionPerformed(ActionEvent e) {
 			   quiz1.title = titleText.getText();
 			   quiz1.description = descText.getText();
-			   
+			   if (!checkQuizTitle(quiz1)) {
+				   //Error popup
+				   JOptionPane.showMessageDialog(null, "Quiz must have a title");
+			   }
+			   else {
 			   //clear panel by removing all components
 			   model.quizerPanel.removeAll();
 			   int x = 10, y = 10, w = 90, h = 30, wt = 1180, change=90;
@@ -403,10 +414,12 @@ public class Quizer{
 		               else if(options[n].contains("Exit Program")){
 		                   System.exit(0);
 		               }
+				   	
 				   }
 			   });
 			   model.quizerPanel.add(createButton);
 			   model.quizerPanel.repaint();
+			   }
 		   }
 	   });
 	   

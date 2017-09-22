@@ -41,10 +41,16 @@ public class TestQuizer {
 	@Test
 	public void testDeserializeQuiz() {
 		Quiz quiz = new Quiz();
-		quiz = test.deserializeQuiz("Quiz1.ser");	//file exists
-		assertNotNull(quiz);
 		
 		quiz = test.deserializeQuiz("Quiz1");	//file doesn't exists
 		assertNull(quiz);
+	}
+	
+	@Test
+	public void testCheckQuizTitle() {
+		Quiz quiz = new Quiz();
+		quiz.title = "quiz1";
+		boolean result = test.checkQuizTitle(quiz);
+		assertTrue(result);
 	}
 }
