@@ -53,4 +53,5 @@ public class TestQuizer {
 		boolean result = test.checkQuizTitle(quiz);
 		assertTrue(result);
 	}
+	
 }

@@ -4,8 +4,6 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.SoftBevelBorder;
-
 import java.lang.*;
 import java.util.*;
 
@@ -24,7 +22,6 @@ public class Quizer{
 	   prepareGUI();
    }
    public static void main(String[] args){
-	   //Quizer object created
 	   Quizer quizerGUI = new Quizer(); 
 	   //show GUI
 	   quizerGUI.showGUI();
@@ -64,7 +61,7 @@ public class Quizer{
             
            out.close();
            file.close();
-        
+            
            //System.out.println("Quiz has been serialized");
        }
         
@@ -270,7 +267,7 @@ public class Quizer{
    
    public void createQuiz() {
 	   Quiz quiz1 = new Quiz();
-	   //show all questions labels
+	   //show all questions
 	   for (i=0;i<10;i++) {
 		   for (j=0;j<4;j++) {
 			   model.optionLabel[i][j].show();
@@ -307,16 +304,17 @@ public class Quizer{
 		   public void actionPerformed(ActionEvent e) {
 			   quiz1.title = titleText.getText();
 			   quiz1.description = descText.getText();
-			   if (!checkQuizTitle(quiz1)) {
-				   //Error popup
-				   JOptionPane.showMessageDialog(null, "Quiz must have a title");
-			   }
-			   else {
+			   
 			   //clear panel by removing all components
 			   model.quizerPanel.removeAll();
 			   int x = 10, y = 10, w = 90, h = 30, wt = 1180, change=90;
 			   int xo, yo, wo = w+100, ho = h-5;
 			   
+			   if (!checkQuizTitle(quiz1)) {
+				   //Error popup
+				   JOptionPane.showMessageDialog(null, "Quiz must have a title");
+			   }
+			   else {
 			   //setting position of all questions and option labels
 			   for (i=0; i<10; i++) {
 				   xo = 100; yo = y+h+10;
@@ -358,7 +356,6 @@ public class Quizer{
 						   quiz1.questions[i].setQuestion(model.questText[i].getText());
 						   //storing question types in quiz1 object
 						   quiz1.questions[i].setQuestType(model.comboBox[i].getSelectedIndex());
-						   quiz1.questions[i].setQuestionNo(i++);
 						   
 						   //storing options in quiz1 object
 						   quiz1.questions[i].option1 = model.questOptions[i][0].getText();
@@ -371,7 +368,9 @@ public class Quizer{
 						   
 						   //setting question numbers
 						   quiz1.questions[i].setQuestionNo(i+1);
+						   //System.out.println(quiz1.questions[i].getQuestion());
 					   }
+					   
 					   //serialize the quiz
 					   serializeQuiz(quiz1, quiz1.title+".ser");
 					   
@@ -414,7 +413,6 @@ public class Quizer{
 		               else if(options[n].contains("Exit Program")){
 		                   System.exit(0);
 		               }
-				   	
 				   }
 			   });
 			   model.quizerPanel.add(createButton);
@@ -466,7 +464,16 @@ public class Quizer{
 		});
    }
    
-   public void collectQuizFiles() {
+   //attempt quiz controller
+   public void attemptQuiz() {
+	   model.countQuiz = 0;			//quiz counter
+	   model.tempQuiz = new Quiz();
+	   model.quizerPanel.repaint();
+	   //Attempt Quiz Label
+	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
+	   attemptLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
+	   attemptLabel.setBounds(400, 50, 500, 50);
+	    
 	   //using system commands to find quiz files in working directory
 	   try {
 	         String cmd = "cmd /C dir /b | find \".ser\"";
@@ -487,25 +494,12 @@ public class Quizer{
 	      } catch (Exception ex) {
 	         ex.printStackTrace();
 	      }
-   }
-   //attempt quiz controller
-   public void attemptQuiz() {
-	   model.countQuiz = 0;			//quiz counter
-	   model.tempQuiz = new Quiz();
-	   model.quizerPanel.repaint();
-	   //Attempt Quiz Label
-	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
-	   attemptLabel.setFont(new Font("Franklin Gothic Medium Cond", Font.PLAIN, 40));
-	   attemptLabel.setBounds(450, 50, 500, 50);
-	   
-	   collectQuizFiles();
 	   
 	   //Create Quiz buttons
 	   JButton[] quizButtons = new JButton[model.countQuiz];
 	   int x=200, y=150, w=150, h=40;
 	   for (i=0; i<model.countQuiz; i++) {
 		   quizButtons[i] = new JButton("Quiz "+(i+1));
-		   quizButtons[i].setToolTipText(model.tempQuiz.title);
 		   quizButtons[i].setBounds(x,y,w,h);
 		   model.quizerPanel.add(quizButtons[i]);
 		   model.tempQuiz = deserializeQuiz(model.quizFiles.get(i));
@@ -664,7 +658,13 @@ public class Quizer{
                }
                
                else if(options[n].contains("Log Out")) {
-            	   logout();
+            	   for (i=0;i<10;i++) {
+            		   model.optionRadioGroups[i].clearSelection();
+            		   model.answerText[i].setText("");
+            	   }
+            	   model.quizerPanel.removeAll();
+            	   model.quizerFrame.dispose();
+            	   model.mainFrame.setVisible(true);
                }
                
                else if(options[n].contains("Exit Program")){
@@ -680,15 +680,5 @@ public class Quizer{
 	   model.quizerPanel.add(attQuizDesc);
 	   model.quizerPanel.add(attQuizTitle);
 	   model.quizerPanel.repaint();
-   }
-   
-   public void logout() {
-	   for (i=0;i<10;i++) {
-		   model.optionRadioGroups[i].clearSelection();
-		   model.answerText[i].setText("");
-	   }
-	   model.quizerPanel.removeAll();
-	   model.quizerFrame.dispose();
-	   model.mainFrame.setVisible(true);
    }
 }
