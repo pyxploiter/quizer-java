@@ -8,6 +8,12 @@ import assign.User;
 
 public class TestUser {
 	@Test
+	public void TestUser() {
+		User testuser = new User("Asad");
+		assertNotNull(testuser);
+	}
+	
+	@Test
 	public void testGetName() {
 		User testuser = new User("Asad","1234","Student");
 		String expected = "Asad";

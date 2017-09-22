@@ -2,63 +2,45 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import assign.Quiz;
+import assign.Quizer;
+import assign.User;
 
 public class TestQuizer {
-
+	private Quizer test;
+	
+	@Before
+	public void setUp()
+	{
+	   test = new Quizer();
+	}
+		
 	@Test
 	public void testQuizer() {
-		fail("Not yet implemented");
+		assertNotNull(test);
 	}
-
-	@Test
-	public void testMain() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSerializeUser() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSerializeQuiz() {
-		fail("Not yet implemented");
-	}
-
+	
 	@Test
 	public void testDeserializeUser() {
-		fail("Not yet implemented");
+		Quiz quiz = new Quiz();
+		quiz = test.deserializeQuiz("random");	//no such file so it returns null object
+		assertNull(quiz);
 	}
 
 	@Test
 	public void testDeserializeQuiz() {
-		fail("Not yet implemented");
+		User user = new User("new");
+		user = test.deserializeUser("student.ser");	//file exists
+		assertNotNull(user);
+		
+		user = test.deserializeUser("randomfile");	//file doesn't exists
+		assertNull(user);	
 	}
-
-	@Test
-	public void testCreateQuiz() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testComboBoxEventListener() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testAttemptQuiz() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testQuizButtonEventListener() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testAttemptGUI() {
-		fail("Not yet implemented");
-	}
-
 }

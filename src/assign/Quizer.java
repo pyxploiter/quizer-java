@@ -40,7 +40,7 @@ public class Quizer{
            out.close();
            file.close();
             
-           System.out.println("User has been serialized");
+           //System.out.println("User has been serialized");
        }
         
        catch(IOException ex)
@@ -61,8 +61,8 @@ public class Quizer{
             
            out.close();
            file.close();
-            
-           System.out.println("Quiz has been serialized");
+           
+           //System.out.println("Quiz has been serialized");
        }
         
        catch(IOException ex)
@@ -85,7 +85,7 @@ public class Quizer{
            in.close();
            file.close();
             
-           System.out.println("User has been deserialized ");
+           //System.out.println("User has been deserialized ");
        }
         
        catch(IOException ex)
@@ -114,7 +114,7 @@ public class Quizer{
            in.close();
            file.close();
             
-           System.out.println("Quiz has been deserialized ");
+           //System.out.println("Quiz has been deserialized ");
        }
         
        catch(IOException ex)
@@ -449,16 +449,7 @@ public class Quizer{
 		});
    }
    
-   //attempt quiz controller
-   public void attemptQuiz() {
-	   model.countQuiz = 0;			//quiz counter
-	   model.tempQuiz = new Quiz();
-	   model.quizerPanel.repaint();
-	   //Attempt Quiz Label
-	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
-	   attemptLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
-	   attemptLabel.setBounds(400, 50, 500, 50);
-	    
+   public void collectQuizFiles() {
 	   //using system commands to find quiz files in working directory
 	   try {
 	         String cmd = "cmd /C dir /b | find \".ser\"";
@@ -479,6 +470,18 @@ public class Quizer{
 	      } catch (Exception ex) {
 	         ex.printStackTrace();
 	      }
+   }
+   //attempt quiz controller
+   public void attemptQuiz() {
+	   model.countQuiz = 0;			//quiz counter
+	   model.tempQuiz = new Quiz();
+	   model.quizerPanel.repaint();
+	   //Attempt Quiz Label
+	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
+	   attemptLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
+	   attemptLabel.setBounds(400, 50, 500, 50);
+	   
+	   collectQuizFiles();
 	   
 	   //Create Quiz buttons
 	   JButton[] quizButtons = new JButton[model.countQuiz];
