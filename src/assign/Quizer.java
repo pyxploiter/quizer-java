@@ -4,6 +4,8 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.SoftBevelBorder;
+
 import java.lang.*;
 import java.util.*;
 
@@ -22,7 +24,9 @@ public class Quizer{
 	   prepareGUI();
    }
    public static void main(String[] args){
+	   //Quizer object created
 	   Quizer quizerGUI = new Quizer(); 
+	   //show GUI
 	   quizerGUI.showGUI();
    }
    
@@ -39,7 +43,7 @@ public class Quizer{
            out.close();
            file.close();
             
-           System.out.println("User has been serialized");
+           //System.out.println("User has been serialized");
        }
         
        catch(IOException ex)
@@ -60,8 +64,8 @@ public class Quizer{
             
            out.close();
            file.close();
-            
-           System.out.println("Quiz has been serialized");
+        
+           //System.out.println("Quiz has been serialized");
        }
         
        catch(IOException ex)
@@ -84,7 +88,7 @@ public class Quizer{
            in.close();
            file.close();
             
-           System.out.println("User has been deserialized ");
+           //System.out.println("User has been deserialized ");
        }
         
        catch(IOException ex)
@@ -113,7 +117,7 @@ public class Quizer{
            in.close();
            file.close();
             
-           System.out.println("Quiz has been deserialized ");
+           //System.out.println("Quiz has been deserialized ");
        }
         
        catch(IOException ex)
@@ -130,9 +134,11 @@ public class Quizer{
    
    
    private void prepareGUI(){
+	  //create new JFrame for login window
       model.mainFrame = new JFrame("Login");
       model.mainFrame.setSize(400,400);
       
+      //Listener for close button
       model.mainFrame.addWindowListener(new WindowAdapter() {
          public void windowClosing(WindowEvent windowEvent){
             System.exit(0);
@@ -156,24 +162,28 @@ public class Quizer{
       lblLogin.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 30));
       lblLogin.setBounds(147, 13, 79, 38);
       
-      //Input boxes with their labels
+      //Username label on login page
       JLabel namelabel= new JLabel("User Name:", SwingConstants.LEFT);
       namelabel.setBounds(76, 66, 79, 16);
       
+      //password label on login page
       JLabel passwordLabel = new JLabel("Password: ", JLabel.CENTER);
       passwordLabel.setBounds(76, 131, 64, 16);
       
+      //username textfield for login page
       final JTextField userText = new JTextField(6);
       userText.setBounds(76, 95, 238, 22);
       
+      //password text field for login page
       final JPasswordField passwordText = new JPasswordField(6);      
       passwordText.setBounds(76, 158, 238, 22);
       passwordText.setEchoChar('*');
       
-      //Student/Instructor radio buttons
+      //instructor radio button
       JRadioButton rdbtnInstructor = new JRadioButton("Instructor");
       rdbtnInstructor.setBounds(91, 194, 92, 25);
       
+      //student radio button
       JRadioButton rdbtnStudent = new JRadioButton("Student");
       rdbtnStudent.setBounds(204, 194, 92, 25);
       
@@ -203,7 +213,9 @@ public class Quizer{
         		 model.statusLabel.setText("Invalid input.");
         	 }  
         	 
+        	 //when login is successful
         	if (model.credentialCheck) {
+        		//creating new frame after login
         		model.quizerFrame = new JFrame("Quizer");
         		model.quizerFrame.setSize(1400, 1000);
         		model.quizerFrame.addWindowListener(new WindowAdapter() {
@@ -251,6 +263,7 @@ public class Quizer{
    
    public void createQuiz() {
 	   Quiz quiz1 = new Quiz();
+	   //show all questions
 	   for (i=0;i<10;i++) {
 		   for (j=0;j<4;j++) {
 			   model.optionLabel[i][j].show();
@@ -258,17 +271,19 @@ public class Quizer{
 		   }
 	   }
 	   model.quizerPanel.repaint();
-	   //Quiz Title Label
+	   //Create new Quiz label
 	   JLabel quizLabel = new JLabel("Create New Quiz");
 	   quizLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
 	   quizLabel.setBounds(430, 60, 500, 50);
-	      
+	   
+	   //Quiz Title label
 	   JLabel quizTitle = new JLabel("Title: ", SwingConstants.LEFT);
 	   quizTitle.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 24));
 	   quizTitle.setBounds(200, 185, 200, 20);
 	   final JTextField titleText = new JTextField(6);
 	   titleText.setBounds(400, 180, 400, 30);
 	   
+	   //Quiz description label
 	   JLabel quizDescription = new JLabel("Description: ", SwingConstants.LEFT);
 	   quizDescription.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 24));
 	   quizDescription.setBounds(200, 265, 200, 20);
@@ -286,10 +301,12 @@ public class Quizer{
 			   quiz1.title = titleText.getText();
 			   quiz1.description = descText.getText();
 			   
+			   //clear panel by removing all components
 			   model.quizerPanel.removeAll();
 			   int x = 10, y = 10, w = 90, h = 30, wt = 1180, change=90;
 			   int xo, yo, wo = w+100, ho = h-5;
 			   
+			   //setting position of all questions and option labels
 			   for (i=0; i<10; i++) {
 				   xo = 100; yo = y+h+10;
 				   model.questLabel[i].setBounds(x, y, w, h);
@@ -307,9 +324,11 @@ public class Quizer{
 			   }
 			   
 			   y += change;
+			   //create quiz button
 			   JButton createButton = new JButton("Create Quiz");
 			   createButton.setBounds(600, 900, 150, h);
 			   			
+			   //adding all text labels and text fields to panel
 			   for (i=0; i<10; i++) {
 				   model.quizerPanel.add(model.questText[i]);
 				   model.quizerPanel.add(model.questLabel[i]);
@@ -328,6 +347,7 @@ public class Quizer{
 						   quiz1.questions[i].setQuestion(model.questText[i].getText());
 						   //storing question types in quiz1 object
 						   quiz1.questions[i].setQuestType(model.comboBox[i].getSelectedIndex());
+						   quiz1.questions[i].setQuestionNo(i++);
 						   
 						   //storing options in quiz1 object
 						   quiz1.questions[i].option1 = model.questOptions[i][0].getText();
@@ -344,6 +364,7 @@ public class Quizer{
 					   //serialize the quiz
 					   serializeQuiz(quiz1, quiz1.title+".ser");
 					   
+					   //pop-up options when quiz is created
 					   String[] options = {"Create another Quiz", "Log Out", "Exit Program"};
 		               int n = JOptionPane.showOptionDialog(null,quiz1.title+" is successfully created.","Create Quiz",
 		            		   JOptionPane.DEFAULT_OPTION,
@@ -389,6 +410,7 @@ public class Quizer{
 		   }
 	   });
 	   
+	   //adding components to the panel
 	   model.quizerPanel.setLayout(null);
 	   model.quizerPanel.add(quizLabel);
 	   model.quizerPanel.add(quizTitle);
@@ -398,6 +420,7 @@ public class Quizer{
 	   model.quizerPanel.add(createQuizButton);
    }
    
+   //option combobox event listening
    public void ComboBoxEventListener(int x) {
 	   model.comboBox[x].addActionListener (new ActionListener () {
 		   public void actionPerformed(ActionEvent event) {
@@ -430,15 +453,8 @@ public class Quizer{
 		});
    }
    
-   public void attemptQuiz() {
-	   model.countQuiz = 0;			//quiz counter
-	   model.tempQuiz = new Quiz();
-	   model.quizerPanel.repaint();
-	   //Attempt Quiz Label
-	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
-	   attemptLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
-	   attemptLabel.setBounds(400, 50, 500, 50);
-	    
+   public void collectQuizFiles() {
+	   //using system commands to find quiz files in working directory
 	   try {
 	         String cmd = "cmd /C dir /b | find \".ser\"";
 	         // create a process and execute cmd 
@@ -447,6 +463,7 @@ public class Quizer{
 	         String line = null;
 	     
 	         while ((line = in.readLine()) != null) {
+	        	 //collect all serialized files other than instructor or student 
 	        	 if (!(line.equals("instructor.ser") || line.equals("student.ser"))) {
 	        		 //System.out.println(line);
 	        		 model.quizFiles.add(line);
@@ -457,19 +474,37 @@ public class Quizer{
 	      } catch (Exception ex) {
 	         ex.printStackTrace();
 	      }
+   }
+   //attempt quiz controller
+   public void attemptQuiz() {
+	   model.countQuiz = 0;			//quiz counter
+	   model.tempQuiz = new Quiz();
+	   model.quizerPanel.repaint();
+	   //Attempt Quiz Label
+	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
+	   attemptLabel.setFont(new Font("Franklin Gothic Medium Cond", Font.PLAIN, 40));
+	   attemptLabel.setBounds(450, 50, 500, 50);
+	   
+	   collectQuizFiles();
 	   
 	   //Create Quiz buttons
 	   JButton[] quizButtons = new JButton[model.countQuiz];
-	   int x=500, y=150, w=150, h=40;
+	   int x=200, y=150, w=150, h=40;
 	   for (i=0; i<model.countQuiz; i++) {
 		   quizButtons[i] = new JButton("Quiz "+(i+1));
+		   quizButtons[i].setToolTipText(model.tempQuiz.title);
 		   quizButtons[i].setBounds(x,y,w,h);
 		   model.quizerPanel.add(quizButtons[i]);
 		   model.tempQuiz = deserializeQuiz(model.quizFiles.get(i));
 		   quizButtonEventListener(quizButtons[i], model.tempQuiz);
-		   y+=60;
+		   x+=200;
+		   if (i%4 == 3) {
+			   x = 200;
+			   y += 100;
+		   }
 	   }
 	   
+	   //if there is no quiz generated by instructor
 	   if (model.countQuiz < 1) {
 		   //No Quiz Label
 		   JLabel noQuizLabel = new JLabel("Currently, There is no Quiz!!");
@@ -482,6 +517,7 @@ public class Quizer{
 	   model.quizerPanel.add(attemptLabel);
    }
    
+   //attempt quiz button listener
    public void quizButtonEventListener(JButton quizButtons, Quiz tempQuiz) {
 	   quizButtons.addActionListener(new ActionListener() {
 		   public void actionPerformed(ActionEvent e) {
@@ -490,6 +526,7 @@ public class Quizer{
 	   });
    }
    
+   //attempt quiz GUI
    public void attemptGUI(Quiz recQuiz) {
 	   model.marks = 0;
 	   model.quizerPanel.removeAll();
@@ -504,8 +541,12 @@ public class Quizer{
 	   attQuizDesc.setFont(new Font("Times", Font.PLAIN, 18));
 	   attQuizDesc.setBounds(200, 60, 1000, 20);
 	   
+	   //printing all questions and options
 	   int x=10, y=120, w=90,h=20, xo;
 	   for (i=0; i<10; i++) {
+		   if (recQuiz.questions[i].question.equals("")) {
+			   break;
+		   }
 		   xo = x;
 		   model.optionRadioButtons[i][0].setText(recQuiz.questions[i].option1);
 		   model.optionRadioButtons[i][1].setText(recQuiz.questions[i].option2);
@@ -552,11 +593,14 @@ public class Quizer{
 		   model.quizerPanel.add(model.questLabel[i]);
 	   }
 	   
+	   //submit quiz button
 	   JButton submitQuiz = new JButton("Submit Quiz");
 	   submitQuiz.setBounds(510,y+20,150,40);
+	   //cancel button
 	   JButton cancelQuiz = new JButton("Cancel");
 	   cancelQuiz.setBounds(670,y+20,110,40);
 	   
+	   //cancel button event listener
 	   cancelQuiz.addActionListener(new ActionListener() {
 		   public void actionPerformed(ActionEvent e) {
 			   for (i=0;i<10;i++) {
@@ -568,7 +612,7 @@ public class Quizer{
 		   }
 	   });
 	   
-	   
+	   //submit quiz button event listener
 	   submitQuiz.addActionListener(new ActionListener() {
 		   public void actionPerformed(ActionEvent e) {	
 			   for (i=0;i<10;i++) {
@@ -591,6 +635,7 @@ public class Quizer{
 				   }
 			   }
 			   
+			   //pop-up box after submitting quiz
 			   String[] options = {"Attempt another Quiz", "Log Out", "Exit Program"};
                int n = JOptionPane.showOptionDialog(null,"Your Obtained Marks: "+model.marks,"Result",
             		   JOptionPane.DEFAULT_OPTION,
@@ -606,13 +651,7 @@ public class Quizer{
                }
                
                else if(options[n].contains("Log Out")) {
-            	   for (i=0;i<10;i++) {
-            		   model.optionRadioGroups[i].clearSelection();
-            		   model.answerText[i].setText("");
-            	   }
-            	   model.quizerPanel.removeAll();
-            	   model.quizerFrame.dispose();
-            	   model.mainFrame.setVisible(true);
+            	   logout();
                }
                
                else if(options[n].contains("Exit Program")){
@@ -622,10 +661,21 @@ public class Quizer{
 		   }
 	   });
 	   
+	   //adding components to panel 
 	   model.quizerPanel.add(cancelQuiz);
 	   model.quizerPanel.add(submitQuiz);
 	   model.quizerPanel.add(attQuizDesc);
 	   model.quizerPanel.add(attQuizTitle);
 	   model.quizerPanel.repaint();
+   }
+   
+   public void logout() {
+	   for (i=0;i<10;i++) {
+		   model.optionRadioGroups[i].clearSelection();
+		   model.answerText[i].setText("");
+	   }
+	   model.quizerPanel.removeAll();
+	   model.quizerFrame.dispose();
+	   model.mainFrame.setVisible(true);
    }
 }

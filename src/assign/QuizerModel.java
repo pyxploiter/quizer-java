@@ -44,7 +44,7 @@ public class QuizerModel {
 		 //student1 = new User("asadali", "1234", "student");
 		   //instructor1 = new User("xeno", "asdf", "instructor");
 		   
-		   //initializing options text fields
+		   //initializing variables
 		   for (i=0; i<10; i++) {
 			   questLabel[i] = new JLabel("Question "+(i+1)+":", SwingConstants.LEFT);
 			   answerLabel[i] = new JLabel("Answer: ", SwingConstants.LEFT);
