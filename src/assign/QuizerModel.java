@@ -26,7 +26,7 @@ public class QuizerModel {
 	   //private User instructor1;
 	   public User student;
 	   public User instructor;
-	   public Quiz tempQuiz;
+	   public Quiz tempQuiz = new Quiz();
 	   public int marks;
 	   public final JTextField[][] questOptions = new JTextField[10][4];
 	   public final JTextField[] questText = new JTextField[10];
