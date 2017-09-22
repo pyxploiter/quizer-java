@@ -24,6 +24,7 @@ public class Quizer{
 	   prepareGUI();
    }
    public static void main(String[] args){
+	   //Quizer object created
 	   Quizer quizerGUI = new Quizer(); 
 	   //show GUI
 	   quizerGUI.showGUI();
