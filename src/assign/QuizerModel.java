@@ -39,6 +39,10 @@ public class QuizerModel {
 	   public final JRadioButton[][] optionRadioButtons = new JRadioButton[10][4];
 	   public final ButtonGroup[] optionRadioGroups = new ButtonGroup[10];
 	   public String[] attemptAnswers = new String[10];
+	   public final JRadioButton rdbtnStudent = new JRadioButton("Student");
+	   public final JRadioButton rdbtnInstructor = new JRadioButton("Instructor");
+	   public final JLabel attemptLabel = new JLabel("");
+	   public final JTextField[] questionNoText = new JTextField[10];
 	   
 	   public QuizerModel() {
 		 //student1 = new User("asadali", "1234", "student");
@@ -50,6 +54,7 @@ public class QuizerModel {
 			   answerLabel[i] = new JLabel("Answer: ", SwingConstants.LEFT);
 			   attQuestLabel[i] = new JLabel("", SwingConstants.LEFT);
 			   questText[i] = new JTextField(6);
+			   questionNoText[i] = new JTextField(6);
 			   answerText[i] = new JTextField(6);
 			   comboBox[i] = new JComboBox();
 			   comboBox[i].setModel(new DefaultComboBoxModel(new String[] {"MCQ", "Numeric", "True/False"}));

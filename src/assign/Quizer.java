@@ -3,6 +3,8 @@ package assign;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import javax.naming.ldap.Rdn;
 import javax.swing.*;
 import java.lang.*;
 import java.util.*;
@@ -177,17 +179,15 @@ public class Quizer{
       passwordText.setEchoChar('*');
       
       //instructor radio button
-      JRadioButton rdbtnInstructor = new JRadioButton("Instructor");
-      rdbtnInstructor.setBounds(91, 194, 92, 25);
+      model.rdbtnInstructor.setBounds(91, 194, 92, 25);
       
       //student radio button
-      JRadioButton rdbtnStudent = new JRadioButton("Student");
-      rdbtnStudent.setBounds(204, 194, 92, 25);
+      model.rdbtnStudent.setBounds(204, 194, 92, 25);
       
       //grouping both radio buttons to select each at a time
       ButtonGroup group = new ButtonGroup();
-      group.add(rdbtnInstructor);
-      group.add(rdbtnStudent);
+      group.add(model.rdbtnInstructor);
+      group.add(model.rdbtnStudent);
       
       //Login button
       JButton loginButton = new JButton("Login");
@@ -198,11 +198,11 @@ public class Quizer{
          public void actionPerformed(ActionEvent e) {
         	 String username = userText.getText();
         	 String password = new String(passwordText.getPassword()); //it returns char[] so type casted to string
-        	 if (rdbtnInstructor.isSelected()) {
+        	 if (model.rdbtnInstructor.isSelected()) {
         		 model.credentialCheck = model.instructor.login(username, password);
         	 }
         	 
-        	 else if (rdbtnStudent.isSelected()) {
+        	 else if (model.rdbtnStudent.isSelected()) {
         		 model.credentialCheck = model.student.login(username, password);
         	 }
         	 
@@ -230,12 +230,7 @@ public class Quizer{
         		model.mainFrame.dispose();     
         	     userText.setText("");
         	     passwordText.setText("");
-        		 if (rdbtnStudent.isSelected()) {
-        			 attemptQuiz();
-        		 }
-        		 else {
-        			 createQuiz();
-        		 }
+        		 showQuizzes();
         	}
          }
       }); 
@@ -248,8 +243,8 @@ public class Quizer{
       model.controlPanel.add(passwordLabel);       
       model.controlPanel.add(passwordText);
       model.controlPanel.add(loginButton);
-      model.controlPanel.add(rdbtnInstructor);
-      model.controlPanel.add(rdbtnStudent);
+      model.controlPanel.add(model.rdbtnInstructor);
+      model.controlPanel.add(model.rdbtnStudent);
       
    }
    
@@ -265,7 +260,113 @@ public class Quizer{
 		   return false;
    }
    
+   public void loadQuizzes() {
+	 //using system commands to find quiz files in working directory
+	   try {
+	         String cmd = "cmd /C dir /b | find \".ser\"";
+	         // create a process and execute cmd 
+	         Process process = Runtime.getRuntime().exec(cmd,null);
+	         BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	         String line = null;
+	     
+	         while ((line = in.readLine()) != null) {
+	        	 //collect all serialized files other than instructor or student 
+	        	 if (!(line.equals("instructor.ser") || line.equals("student.ser"))) {
+	        		 //System.out.println(line);
+	        		 model.quizFiles.add(line);
+	        		 model.countQuiz++;
+	        	 }
+	         }
+	         
+	      } catch (Exception ex) {
+	         ex.printStackTrace();
+	      }
+   }
+   
+   //collect all generated quiz files
+   public void showQuizzes() {
+	   model.countQuiz = 0;			//quiz counter
+	   model.tempQuiz = new Quiz();
+	   model.quizerPanel.repaint();
+	   if (model.rdbtnStudent.isSelected()) {
+		   //Attempt Quiz Label
+		   model.attemptLabel.setText("Attempt Any Quiz");
+		   model.attemptLabel.setBounds(420, 50, 500, 50);
+	   }
+	   else {
+		   //Attempt Quiz Label
+		   model.attemptLabel.setText("Available Quizzes");
+		   model.attemptLabel.setBounds(500, 50, 500, 50);
+		   //Create new Quiz label
+		   JButton createQuizButton = new JButton("Create New Quiz");
+		   createQuizButton.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 25));
+		   createQuizButton.setBounds(490, 850, 300, 50);
+		   
+		   //Log out button
+		   JButton logOutButton = new JButton("Log Out");
+		   logOutButton.setFont(new Font("Times", Font.PLAIN, 18));
+		   logOutButton.setBounds(1000, 850, 170, 50);
+		   
+		   logOutButton.addActionListener(new ActionListener() {
+			   public void actionPerformed(ActionEvent e) {
+				   model.quizerPanel.removeAll();
+				   model.quizerFrame.dispose();
+				   model.mainFrame.setVisible(true);
+			   }
+		   });
+		   model.quizerPanel.add(logOutButton);
+		   model.quizerPanel.add(createQuizButton);
+		   createQuizButton.addActionListener(new ActionListener() {
+			   public void actionPerformed(ActionEvent e) {
+				   createQuiz();
+			   }
+		   });
+	   }
+	   model.attemptLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
+	  
+	   loadQuizzes();
+	   
+	   //Create Quiz buttons
+	   JButton[] quizButtons = new JButton[model.countQuiz];
+	   int x=200, y=150, w=150, h=40;
+	   for (i=0; i<model.countQuiz; i++) {
+		   quizButtons[i] = new JButton("Quiz "+(i+1));
+		   quizButtons[i].setBounds(x,y,w,h);
+		   model.quizerPanel.add(quizButtons[i]);
+		   model.tempQuiz = deserializeQuiz(model.quizFiles.get(i));
+		   quizButtonEventListener(quizButtons[i], model.tempQuiz);
+		   x+=200;
+		   if (i%4 == 3) {
+			   x = 200;
+			   y += 100;
+		   }
+	   }
+	   
+	   //if there is no quiz generated by instructor
+	   if (model.countQuiz < 1) {
+		   //No Quiz Label
+		   JLabel noQuizLabel = new JLabel("Currently, There is no Quiz!!");
+		   noQuizLabel.setFont(new Font("Times", Font.PLAIN, 40));
+		   noQuizLabel.setBounds(300, 300, 500, 50); 
+		   model.quizerPanel.add(noQuizLabel);
+	   }
+	   
+	   model.quizerPanel.setLayout(null);
+	   model.quizerPanel.add(model.attemptLabel);
+   }
+   
+   //show quizzes button listener
+   public void quizButtonEventListener(JButton quizButtons, Quiz tempQuiz) {
+	   quizButtons.addActionListener(new ActionListener() {
+		   public void actionPerformed(ActionEvent e) {
+			   editQuiz(tempQuiz);
+		   }
+	   });
+   }
+   
    public void createQuiz() {
+	   model.quizerPanel.removeAll();
+	   model.quizerPanel.repaint();
 	   Quiz quiz1 = new Quiz();
 	   //show all questions
 	   for (i=0;i<10;i++) {
@@ -274,7 +375,6 @@ public class Quizer{
 			   model.questOptions[i][j].show();
 		   }
 	   }
-	   model.quizerPanel.repaint();
 	   //Create new Quiz label
 	   JLabel quizLabel = new JLabel("Create New Quiz");
 	   quizLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
@@ -313,6 +413,7 @@ public class Quizer{
 			   if (!checkQuizTitle(quiz1)) {
 				   //Error popup
 				   JOptionPane.showMessageDialog(null, "Quiz must have a title");
+				   createQuiz();
 			   }
 			   else {
 			   //setting position of all questions and option labels
@@ -349,6 +450,27 @@ public class Quizer{
 					   model.quizerPanel.add(model.questOptions[i][j]);
 				   }
 			   }
+			   
+			   //cancel button
+			   JButton cancelQuiz = new JButton("Cancel");
+			   cancelQuiz.setBounds(770,900,110,h);
+			   
+			   cancelQuiz.addActionListener(new ActionListener() {
+				   public void actionPerformed(ActionEvent e) {	
+					   for (i=0; i<10; i++) {
+						   model.questLabel[i].setText("");
+						   model.questText[i].setText("");
+						   model.answerLabel[i].setText("");
+						   model.answerText[i].setText("");
+						   for(j=0; j<10; j++) {
+							   model.questOptions[i][j].setText("");
+						   }
+						   model.quizerPanel.removeAll();
+		            	   showQuizzes();
+					   }
+				   }
+			   });
+			   
 			   createButton.addActionListener(new ActionListener() {
 				   public void actionPerformed(ActionEvent e) {	   
 					   for (i=0; i<10; i++) {
@@ -375,12 +497,12 @@ public class Quizer{
 					   serializeQuiz(quiz1, quiz1.title+".ser");
 					   
 					   //pop-up options when quiz is created
-					   String[] options = {"Create another Quiz", "Log Out", "Exit Program"};
+					   String[] options = {"Show Quizzes", "Log Out", "Exit Program"};
 		               int n = JOptionPane.showOptionDialog(null,quiz1.title+" is successfully created.","Create Quiz",
 		            		   JOptionPane.DEFAULT_OPTION,
 		            		   JOptionPane.QUESTION_MESSAGE,
 		            		   null,options,options[0]);
-		               if(options[n].contains("Create another Quiz")){
+		               if(options[n].contains("Show Quizzes")){
 		            	   titleText.setText("");
 		            	   descText.setText("");
 		            	   for (i=0; i<10; i++) {
@@ -392,7 +514,7 @@ public class Quizer{
 		            		   }
 		            	   }
 		            	   model.quizerPanel.removeAll();
-		            	   createQuiz();
+		            	   showQuizzes();
 		               }
 		               
 		               else if(options[n].contains("Log Out")) {
@@ -464,78 +586,7 @@ public class Quizer{
 		});
    }
    
-   //attempt quiz controller
-   public void attemptQuiz() {
-	   model.countQuiz = 0;			//quiz counter
-	   model.tempQuiz = new Quiz();
-	   model.quizerPanel.repaint();
-	   //Attempt Quiz Label
-	   JLabel attemptLabel = new JLabel("Attempt Any Quiz");
-	   attemptLabel.setFont(new Font("Source Sans Pro Semibold", Font.PLAIN, 40));
-	   attemptLabel.setBounds(400, 50, 500, 50);
-	    
-	   //using system commands to find quiz files in working directory
-	   try {
-	         String cmd = "cmd /C dir /b | find \".ser\"";
-	         // create a process and execute cmd 
-	         Process process = Runtime.getRuntime().exec(cmd,null);
-	         BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-	         String line = null;
-	     
-	         while ((line = in.readLine()) != null) {
-	        	 //collect all serialized files other than instructor or student 
-	        	 if (!(line.equals("instructor.ser") || line.equals("student.ser"))) {
-	        		 //System.out.println(line);
-	        		 model.quizFiles.add(line);
-	        		 model.countQuiz++;
-	        	 }
-	         }
-	         
-	      } catch (Exception ex) {
-	         ex.printStackTrace();
-	      }
-	   
-	   //Create Quiz buttons
-	   JButton[] quizButtons = new JButton[model.countQuiz];
-	   int x=200, y=150, w=150, h=40;
-	   for (i=0; i<model.countQuiz; i++) {
-		   quizButtons[i] = new JButton("Quiz "+(i+1));
-		   quizButtons[i].setBounds(x,y,w,h);
-		   model.quizerPanel.add(quizButtons[i]);
-		   model.tempQuiz = deserializeQuiz(model.quizFiles.get(i));
-		   quizButtonEventListener(quizButtons[i], model.tempQuiz);
-		   x+=200;
-		   if (i%4 == 3) {
-			   x = 200;
-			   y += 100;
-		   }
-	   }
-	   
-	   //if there is no quiz generated by instructor
-	   if (model.countQuiz < 1) {
-		   //No Quiz Label
-		   JLabel noQuizLabel = new JLabel("Currently, There is no Quiz!!");
-		   noQuizLabel.setFont(new Font("Times", Font.PLAIN, 40));
-		   noQuizLabel.setBounds(300, 300, 500, 50); 
-		   model.quizerPanel.add(noQuizLabel);
-	   }
-	   
-	   model.quizerPanel.setLayout(null);
-	   model.quizerPanel.add(attemptLabel);
-   }
-   
-   //attempt quiz button listener
-   public void quizButtonEventListener(JButton quizButtons, Quiz tempQuiz) {
-	   quizButtons.addActionListener(new ActionListener() {
-		   public void actionPerformed(ActionEvent e) {
-			   attemptGUI(tempQuiz);
-		   }
-	   });
-   }
-   
-   //attempt quiz GUI
-   public void attemptGUI(Quiz recQuiz) {
-	   model.marks = 0;
+   public void printQuiz(Quiz recQuiz) {
 	   model.quizerPanel.removeAll();
 	   model.quizerPanel.repaint();
 	   //Quiz Title Label
@@ -560,6 +611,9 @@ public class Quizer{
 		   model.optionRadioButtons[i][2].setText(recQuiz.questions[i].option3);
 		   model.optionRadioButtons[i][3].setText(recQuiz.questions[i].option4);
 		   for (j=0;j<4;j++) {
+			   if (model.rdbtnInstructor.isSelected()) {
+				   model.optionRadioButtons[i][j].disable();
+			   }
 			   model.optionRadioGroups[i].add(model.optionRadioButtons[i][j]);
 			   model.optionRadioButtons[i][j].setFont(new Font("Times", Font.PLAIN, 14));
 			   model.optionRadioButtons[i][j].setBounds(xo, y+30,320,h);
@@ -602,10 +656,15 @@ public class Quizer{
 	   
 	   //submit quiz button
 	   JButton submitQuiz = new JButton("Submit Quiz");
+	   
 	   submitQuiz.setBounds(510,y+20,150,40);
 	   //cancel button
 	   JButton cancelQuiz = new JButton("Cancel");
 	   cancelQuiz.setBounds(670,y+20,110,40);
+	   if (model.rdbtnInstructor.isSelected()) {
+		   cancelQuiz.setText("Go Back");
+		   cancelQuiz.setBounds(590,y+20,110,40);
+	   }
 	   
 	   //cancel button event listener
 	   cancelQuiz.addActionListener(new ActionListener() {
@@ -615,70 +674,93 @@ public class Quizer{
 				   model.answerText[i].setText("");
 			   }
 			   model.quizerPanel.removeAll();
-			   attemptQuiz();
+			   showQuizzes();
 		   }
 	   });
 	   
 	   //submit quiz button event listener
 	   submitQuiz.addActionListener(new ActionListener() {
 		   public void actionPerformed(ActionEvent e) {	
-			   for (i=0;i<10;i++) {
-				   if (!recQuiz.questions[i].questionType.equals("Numeric")) {
-					   for(j=0;j<4;j++) {
-						   if (model.optionRadioButtons[i][j].isSelected()) {
-							   model.attemptAnswers[i] = model.optionRadioButtons[i][j].getText();
-						   }
-						   if (recQuiz.questions[i].questionType.equals("True/False") && j>1) {
-							   break;
-						   }
-					   }
+			   if (model.rdbtnInstructor.isSelected()) {
+				   for (i=0;i<10;i++) {
+					   model.optionRadioGroups[i].clearSelection();
+					   model.answerText[i].setText("");
 				   }
-				   else {
-					   model.attemptAnswers[i] = model.answerText[i].getText();
-				   }
-				   
-				   if (recQuiz.questions[i].expectedAnswer.equals(model.attemptAnswers[i]) && !model.attemptAnswers[i].equals("")) {
-					   model.marks++;
-				   }
+				   model.quizerPanel.removeAll();
+				   showQuizzes();
 			   }
-			   
-			   //pop-up box after submitting quiz
-			   String[] options = {"Attempt another Quiz", "Log Out", "Exit Program"};
-               int n = JOptionPane.showOptionDialog(null,"Your Obtained Marks: "+model.marks,"Result",
-            		   JOptionPane.DEFAULT_OPTION,
-            		   JOptionPane.QUESTION_MESSAGE,
-            		   null,options,options[0]);
-               if(options[n].contains("Attempt another Quiz")){
-            	   for (i=0;i<10;i++) {
-            		   model.optionRadioGroups[i].clearSelection();
-            		   model.answerText[i].setText("");
-            	   }
-            	   model.quizerPanel.removeAll();
-            	   attemptQuiz();
-               }
-               
-               else if(options[n].contains("Log Out")) {
-            	   for (i=0;i<10;i++) {
-            		   model.optionRadioGroups[i].clearSelection();
-            		   model.answerText[i].setText("");
-            	   }
-            	   model.quizerPanel.removeAll();
-            	   model.quizerFrame.dispose();
-            	   model.mainFrame.setVisible(true);
-               }
-               
-               else if(options[n].contains("Exit Program")){
-                   System.exit(0);
-               }
-               model.student.score = model.marks;
+
+			   else
+				   attemptQuiz(recQuiz);
 		   }
 	   });
-	   
 	   //adding components to panel 
 	   model.quizerPanel.add(cancelQuiz);
-	   model.quizerPanel.add(submitQuiz);
+	   if (model.rdbtnStudent.isSelected()) {
+		   model.quizerPanel.add(submitQuiz);
+	   }
 	   model.quizerPanel.add(attQuizDesc);
 	   model.quizerPanel.add(attQuizTitle);
+   }
+   
+   public void editQuiz(Quiz recQuiz) {
+	   printQuiz(recQuiz);
+   }
+   
+   
+   //attempt quiz GUI
+   public void attemptQuiz(Quiz recQuiz) {
+	   model.marks = 0;
+	   //printQuiz(recQuiz);
+	   for (i=0;i<10;i++) {
+		   if (!recQuiz.questions[i].questionType.equals("Numeric")) {
+			   for(j=0;j<4;j++) {
+				   if (model.optionRadioButtons[i][j].isSelected()) {
+					   model.attemptAnswers[i] = model.optionRadioButtons[i][j].getText();
+				   }
+				   if (recQuiz.questions[i].questionType.equals("True/False") && j>1) {
+					   break;
+				   }
+			   }
+		   }
+		   else {
+			   model.attemptAnswers[i] = model.answerText[i].getText();
+		   }
+
+		   if (recQuiz.questions[i].expectedAnswer.equals(model.attemptAnswers[i]) && !model.attemptAnswers[i].equals("")) {
+			   model.marks++;
+		   }
+	   }
+
+	   //pop-up box after submitting quiz
+	   String[] options = {"Attempt another Quiz", "Log Out", "Exit Program"};
+	   int n = JOptionPane.showOptionDialog(null,"Your Obtained Marks: "+model.marks,"Result",
+			   JOptionPane.DEFAULT_OPTION,
+			   JOptionPane.QUESTION_MESSAGE,
+			   null,options,options[0]);
+	   if(options[n].contains("Attempt another Quiz")){
+		   for (i=0;i<10;i++) {
+			   model.optionRadioGroups[i].clearSelection();
+			   model.answerText[i].setText("");
+		   }
+		   model.quizerPanel.removeAll();
+		   showQuizzes();
+	   }
+
+	   else if(options[n].contains("Log Out")) {
+		   for (i=0;i<10;i++) {
+			   model.optionRadioGroups[i].clearSelection();
+			   model.answerText[i].setText("");
+		   }
+		   model.quizerPanel.removeAll();
+		   model.quizerFrame.dispose();
+		   model.mainFrame.setVisible(true);
+	   }
+
+	   else if(options[n].contains("Exit Program")){
+		   System.exit(0);
+	   }
+	   model.student.score = model.marks;
 	   model.quizerPanel.repaint();
    }
 }
